@@ -342,11 +342,11 @@ export const ISSUE_LIBRARY = {
   },
   TRACK_GTM: {
     category: 'tracking', family: 'tracking', points: 2, impact: 'normal', confidence: 'high',
-    failTitle: 'Google Tag Manager was not detected',
-    failText: 'A tag-management layer was not detected on the homepage.',
-    recommendation: 'Consider using Google Tag Manager if the business needs flexible marketing and conversion tracking.',
-    passTitle: 'Google Tag Manager detected',
-    passText: 'A GTM container appears to be installed.'
+    failTitle: 'Analytics tag setup could be improved',
+    failText: 'We could not detect Google Analytics or a Google Tag Manager container.',
+    recommendation: 'Install GA4 directly or use Google Tag Manager when the business needs flexible marketing and conversion tracking.',
+    passTitle: 'Analytics tagging detected',
+    passText: 'A Google Analytics or Google Tag Manager setup appears to be present.'
   },
   TRACK_FORM: {
     category: 'tracking', family: 'lead_capture', points: 2, impact: 'high', confidence: 'medium',

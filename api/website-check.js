@@ -80,6 +80,9 @@ export default async function handler(req, res) {
         label: score.label,
         provisional: score.provisional,
         unverifiedChecks: score.unverifiedChecks,
+        confirmedScore: score.confirmedScore,
+        confirmedMax: score.confirmedMax,
+        coverage: score.coverage,
       },
       categories: score.categories,
       topIssues: score.topIssues.map((f) => ({
@@ -94,12 +97,19 @@ export default async function handler(req, res) {
       marketingSignals: site.marketingSignals,
       technical: {
         pageSpeedAvailable: pageSpeed.available,
+        pageSpeedError: pageSpeed.available ? null : pageSpeed.error || 'Unavailable',
         brokenLinksChecked: brokenLinks.checked,
+        brokenLinksVerified: brokenLinks.verified,
         brokenLinksFound: brokenLinks.broken.length,
+        brokenLinks: brokenLinks.broken.slice(0, 10),
+        brokenLinksUnverified: brokenLinks.unverified.slice(0, 10),
         sitemapFound: auxBase.sitemapFound,
+        sitemapVerified: auxBase.sitemapVerified,
+        sitemapUrl: auxBase.sitemapUrl,
+        sitemapAttempts: auxBase.sitemapAttempts,
       },
       meta: {
-        version: '1.0.0',
+        version: '1.1.0',
         durationMs: Date.now() - startedAt,
       },
       debug: process.env.EXPOSE_SCAN_DEBUG === 'true' ? {

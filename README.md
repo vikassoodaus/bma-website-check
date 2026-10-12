@@ -1,4 +1,4 @@
-# BMA Free Website Check — Phase 1
+# BMA Free Website Check — Phase 1 — V1.1
 
 This is the first working build of the scanner backend and deterministic 100-point scoring engine.
 
@@ -88,3 +88,15 @@ For every scan, note anything clearly wrong in:
 - PageSpeed result
 
 We should fix detection accuracy before building the polished public frontend.
+
+
+## V1.1 scanner corrections
+
+- XML sitemap responses are now accepted when served as `application/xml` or `text/xml`.
+- Common sitemap paths now include `/sitemap.xml`, `/sitemap_index.xml`, and `/sitemap-index.xml`.
+- Broken-link checks no longer mark large pages as broken simply because a GET fallback body exceeded the old debug limit.
+- Blocked or timed-out link checks are classified as unverified instead of broken.
+- Missing Google Tag Manager no longer creates a false problem when GA4 is already detected directly.
+- Categories with too little verified data are shown as `Not fully verified` instead of being scaled to a misleading perfect score.
+- A 0–100 overall result is only published when at least 90% of the scoring model has been verified.
+- Development diagnostics now expose PageSpeed status, sitemap status, broken links, and unverified links.
