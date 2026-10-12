@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BMA Website Check — Development Tester</title>
+  <style>
+    :root{--ink:#0b302c;--dark:#073d36;--text:#48635d;--line:#dfe8e4;--off:#fbfcfa;--blue:#eaf3ff;--lilac:#f0ebff;--peach:#fff0e7;--mint:#e9f6ef;--sage:#edf5ec;--blush:#ffedef}
+    *{box-sizing:border-box}body{margin:0;background:var(--off);color:var(--ink);font-family:Inter,system-ui,Arial,sans-serif}.wrap{width:min(980px,calc(100% - 28px));margin:50px auto}.eyebrow{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#648079}.title{font-size:clamp(38px,6vw,64px);line-height:1;margin:8px 0 14px;letter-spacing:-.04em}.muted{color:var(--text)}form{display:flex;gap:10px;margin:28px 0 22px}input{flex:1;min-width:0;padding:15px 16px;border:1px solid var(--line);border-radius:12px;font-size:16px}button{border:0;border-radius:12px;background:var(--dark);color:#fff;padding:0 20px;font-weight:800;cursor:pointer}.status{padding:13px 15px;border:1px solid var(--line);border-radius:12px;background:#fff;margin-bottom:18px}.hidden{display:none}.scoreRow{display:grid;grid-template-columns:170px 1fr;gap:16px;align-items:center}.score{font-size:64px;font-weight:800;letter-spacing:-.05em}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}.card{padding:15px;border:1px solid var(--line);border-radius:14px;background:#fff}.cat:nth-child(1){background:var(--blue)}.cat:nth-child(2){background:var(--lilac)}.cat:nth-child(3){background:var(--peach)}.cat:nth-child(4){background:var(--mint)}.cat:nth-child(5){background:var(--sage)}.cat:nth-child(6){background:var(--blush)}.small{font-size:12px;color:var(--text)}h2{margin-top:34px}.issue{margin-bottom:10px}.issue strong{display:block;margin-bottom:5px}pre{white-space:pre-wrap;word-break:break-word;background:#0b302c;color:#fff;padding:14px;border-radius:14px;max-height:360px;overflow:auto}@media(max-width:700px){form{flex-direction:column}button{min-height:48px}.grid{grid-template-columns:1fr 1fr}.scoreRow{grid-template-columns:1fr}.wrap{margin-top:30px}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="eyebrow">BMA Website Check — development tester</div>
+    <h1 class="title">Test the scanner before we design the final experience.</h1>
+    <p class="muted">Enter a public website. This page calls <code>/api/website-check</code> and displays the raw scoring output.</p>
+    <form id="scanForm">
+      <input id="url" name="url" type="text" placeholder="https://example.com" required>
+      <button id="submit" type="submit">Run Check →</button>
+    </form>
+    <div id="status" class="status hidden" aria-live="polite"></div>
+    <section id="result" class="hidden">
+      <div class="scoreRow">
+        <div><div class="score" id="overall">—</div><div class="small">out of 100</div></div>
+        <div><h2 id="label" style="margin:0 0 8px"></h2><div id="domain" class="muted"></div></div>
+      </div>
+      <div id="categories" class="grid"></div>
+      <h2>Top opportunities</h2><div id="issues"></div>
+      <h2>What is working</h2><div id="wins" class="grid"></div>
+      <details style="margin-top:30px"><summary>Raw response</summary><pre id="raw"></pre></details>
+    </section>
+  </main>
+<script>
+const form=document.getElementById('scanForm'),statusEl=document.getElementById('status'),resultEl=document.getElementById('result'),submit=document.getElementById('submit');
+form.addEventListener('submit',async(e)=>{e.preventDefault();resultEl.classList.add('hidden');statusEl.classList.remove('hidden');statusEl.textContent='Connecting to website…';submit.disabled=true;try{const url=document.getElementById('url').value;const r=await fetch('/api/website-check',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({url})});statusEl.textContent='Checking website structure, SEO and mobile performance…';const data=await r.json();if(!r.ok||!data.success)throw new Error(data.error||'Scan failed');document.getElementById('overall').textContent=Math.round(data.score.overall);document.getElementById('label').textContent=data.score.label+(data.score.provisional?' — provisional':'');document.getElementById('domain').textContent=data.website.domain+' • '+data.website.scannedPages.length+' pages sampled • '+(data.meta.durationMs/1000).toFixed(1)+'s';const cats=document.getElementById('categories');cats.innerHTML='';for(const [name,c] of Object.entries(data.categories)){const div=document.createElement('div');div.className='card cat';div.innerHTML='<strong>'+name.replace(/^./,x=>x.toUpperCase())+'</strong><div style="font-size:27px;font-weight:800;margin-top:7px">'+c.score+' / '+c.max+'</div>';cats.appendChild(div)}const issues=document.getElementById('issues');issues.innerHTML='';data.topIssues.forEach((x,i)=>{const div=document.createElement('div');div.className='card issue';div.innerHTML='<strong>'+(i+1)+'. '+x.title+'</strong><div class="small">'+x.text+'</div><div style="margin-top:8px">'+x.recommendation+'</div>';issues.appendChild(div)});const wins=document.getElementById('wins');wins.innerHTML='';data.wins.forEach(x=>{const div=document.createElement('div');div.className='card';div.innerHTML='<strong>✓ '+x.title+'</strong><div class="small" style="margin-top:5px">'+x.text+'</div>';wins.appendChild(div)});document.getElementById('raw').textContent=JSON.stringify(data,null,2);statusEl.textContent='Scan complete.';resultEl.classList.remove('hidden')}catch(err){statusEl.textContent=err.message}finally{submit.disabled=false}});
+</script>
+</body>
+</html>

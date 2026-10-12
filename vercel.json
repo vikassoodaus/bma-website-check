@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/website-check.js": {
+      "maxDuration": 60
+    }
+  }
+}
