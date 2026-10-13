@@ -1,3 +1,7 @@
+# BMA Free Website Check — V1.4.1
+
+This build adds Skippy as an animated progress mascot. Skippy travels along the six-colour scan bar as the percentage increases and performs a final hop at 100%. The mascot is served from `/assets/skippy.webp`.
+
 # BMA Free Website Check — V1.4
 
 V1.4 stabilises the scoring model and improves page discovery before the public-facing design is built.

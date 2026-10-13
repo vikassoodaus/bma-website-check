@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>BMA Website Check — Development Tester V1.4</title>
+  <title>BMA Website Check — Development Tester V1.4.1</title>
   <style>
     :root{--ink:#0b302c;--dark:#073d36;--text:#48635d;--line:#dfe8e4;--off:#fbfcfa;--blue:#eaf3ff;--lilac:#f0ebff;--peach:#fff0e7;--mint:#e9f6ef;--sage:#edf5ec;--blush:#ffedef;--blue-strong:#cfe0f5;--lilac-strong:#ddd0f6;--peach-strong:#f3d9ca;--mint-strong:#cfe5d9;--sage-strong:#d4e3d2;--blush-strong:#edd5df}
     *{box-sizing:border-box}
@@ -20,8 +20,12 @@
     .statusTop{display:flex;align-items:center;justify-content:space-between;gap:16px}
     .statusMessage{min-width:0}
     .statusPercent{flex:0 0 auto;min-width:52px;text-align:right;font-size:18px;font-weight:800;letter-spacing:-.02em;color:var(--dark)}
-    .statusTrack{height:7px;margin-top:10px;overflow:hidden;border-radius:999px;background:#edf2ef}
+    .statusProgressWrap{position:relative;margin-top:10px;padding-top:58px}
+    .statusTrack{height:7px;margin-top:0;overflow:hidden;border-radius:999px;background:#edf2ef}
     .statusFill{width:0;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--blue-strong) 0%,var(--blue-strong) 16.2%,rgba(255,255,255,.72) 16.2%,rgba(255,255,255,.72) 16.66%,var(--lilac-strong) 16.66%,var(--lilac-strong) 32.9%,rgba(255,255,255,.72) 32.9%,rgba(255,255,255,.72) 33.33%,var(--peach-strong) 33.33%,var(--peach-strong) 49.6%,rgba(255,255,255,.72) 49.6%,rgba(255,255,255,.72) 50%,var(--mint-strong) 50%,var(--mint-strong) 66.2%,rgba(255,255,255,.72) 66.2%,rgba(255,255,255,.72) 66.66%,var(--sage-strong) 66.66%,var(--sage-strong) 82.9%,rgba(255,255,255,.72) 82.9%,rgba(255,255,255,.72) 83.33%,var(--blush-strong) 83.33%,var(--blush-strong) 100%);transition:width .38s ease}
+    .statusMascot{position:absolute;left:4%;bottom:2px;width:66px;height:auto;max-width:none;transform:translateX(-50%) rotate(-2deg);transform-origin:50% 100%;pointer-events:none;user-select:none;filter:drop-shadow(0 8px 8px rgba(7,61,54,.16));transition:left .38s cubic-bezier(.22,.8,.22,1),filter .2s ease;will-change:left,transform}
+    .statusMascot.is-finished{filter:drop-shadow(0 10px 10px rgba(7,61,54,.2))}
+    @media (prefers-reduced-motion: reduce){.statusMascot,.statusFill{transition:none}}
     .hidden{display:none}
     .scoreRow{display:grid;grid-template-columns:170px 1fr;gap:16px;align-items:center}
     .score{font-size:64px;font-weight:800;letter-spacing:-.05em}
@@ -33,12 +37,12 @@
     h2{margin-top:34px}.issue{margin-bottom:10px}.issue strong{display:block;margin-bottom:5px}
     .diag{font-size:13px;line-height:1.55}.diag code{font-size:12px}
     pre{white-space:pre-wrap;word-break:break-word;background:#0b302c;color:#fff;padding:14px;border-radius:14px;max-height:420px;overflow:auto}
-    @media(max-width:700px){form{flex-direction:column}button{min-height:48px}.grid{grid-template-columns:1fr 1fr}.scoreRow{grid-template-columns:1fr}.wrap{margin-top:30px}}
+    @media(max-width:700px){form{flex-direction:column}button{min-height:48px}.grid{grid-template-columns:1fr 1fr}.scoreRow{grid-template-columns:1fr}.wrap{margin-top:30px}.statusProgressWrap{padding-top:50px}.statusMascot{width:56px}}
   </style>
 </head>
 <body>
   <main class="wrap">
-    <div class="eyebrow">BMA Website Check — development tester v1.4</div>
+    <div class="eyebrow">BMA Website Check — development tester v1.4.1</div>
     <h1 class="title">Test the scanner before we design the final experience.</h1>
     <p class="muted">Enter a public website. This page calls <code>/api/website-check</code> and displays the scoring output plus developer diagnostics.</p>
 
@@ -52,8 +56,11 @@
         <span id="statusMessage" class="statusMessage">Connecting to website…</span>
         <span id="statusPercent" class="statusPercent">0%</span>
       </div>
-      <div class="statusTrack" aria-hidden="true">
-        <div id="statusFill" class="statusFill"></div>
+      <div class="statusProgressWrap" aria-hidden="true">
+        <img id="statusMascot" class="statusMascot" src="/assets/skippy.webp" alt="" draggable="false">
+        <div class="statusTrack">
+          <div id="statusFill" class="statusFill"></div>
+        </div>
       </div>
     </div>
 
@@ -94,6 +101,9 @@ const statusEl=document.getElementById('status');
 const statusMessage=document.getElementById('statusMessage');
 const statusPercent=document.getElementById('statusPercent');
 const statusFill=document.getElementById('statusFill');
+const statusMascot=document.getElementById('statusMascot');
+const reduceMotion=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let lastMascotHop=0;
 const resultEl=document.getElementById('result');
 const submit=document.getElementById('submit');
 
@@ -118,10 +128,28 @@ function paintProgress(value,message){
   statusPercent.textContent=progressValue+'%';
   statusFill.style.width=progressValue+'%';
   statusMessage.textContent=message||progressStage(progressValue);
+
+  if(statusMascot){
+    const mascotLeft=4+(progressValue*.92);
+    statusMascot.style.left=mascotLeft+'%';
+
+    if(!reduceMotion&&progressValue<100){
+      const now=performance.now();
+      if(now-lastMascotHop>360){
+        lastMascotHop=now;
+        statusMascot.animate([
+          {transform:'translateX(-50%) translateY(0) rotate(-3deg)'},
+          {transform:'translateX(-50%) translateY(-13px) rotate(3deg)',offset:.5},
+          {transform:'translateX(-50%) translateY(0) rotate(-2deg)'}
+        ],{duration:380,easing:'ease-out'});
+      }
+    }
+  }
 }
 
 function startProgress(){
   if(progressTimer)clearInterval(progressTimer);
+  if(statusMascot)statusMascot.classList.remove('is-finished');
   paintProgress(1,'Connecting to website…');
 
   progressTimer=setInterval(()=>{
@@ -141,6 +169,17 @@ function finishProgress(){
     progressTimer=null;
   }
   paintProgress(100,'Scan complete.');
+
+  if(statusMascot){
+    statusMascot.classList.add('is-finished');
+    if(!reduceMotion){
+      statusMascot.animate([
+        {transform:'translateX(-50%) translateY(0) rotate(-2deg)'},
+        {transform:'translateX(-50%) translateY(-20px) rotate(5deg)',offset:.45},
+        {transform:'translateX(-50%) translateY(0) rotate(-2deg)'}
+      ],{duration:520,easing:'cubic-bezier(.2,.8,.2,1)'});
+    }
+  }
 }
 
 function failProgress(message){
