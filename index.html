@@ -17,6 +17,11 @@
     button{border:0;border-radius:12px;background:var(--dark);color:#fff;padding:0 20px;font-weight:800;cursor:pointer}
     button:disabled{opacity:.6;cursor:wait}
     .status{padding:13px 15px;border:1px solid var(--line);border-radius:12px;background:#fff;margin-bottom:18px}
+    .statusTop{display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .statusMessage{min-width:0}
+    .statusPercent{flex:0 0 auto;min-width:52px;text-align:right;font-size:18px;font-weight:800;letter-spacing:-.02em;color:var(--dark)}
+    .statusTrack{height:7px;margin-top:10px;overflow:hidden;border-radius:999px;background:#edf2ef}
+    .statusFill{width:0;height:100%;border-radius:999px;background:linear-gradient(90deg,#073d36,#648079);transition:width .38s ease}
     .hidden{display:none}
     .scoreRow{display:grid;grid-template-columns:170px 1fr;gap:16px;align-items:center}
     .score{font-size:64px;font-weight:800;letter-spacing:-.05em}
@@ -33,7 +38,7 @@
 </head>
 <body>
   <main class="wrap">
-    <div class="eyebrow">BMA Website Check — development tester v1.2</div>
+    <div class="eyebrow">BMA Website Check — development tester v1.3</div>
     <h1 class="title">Test the scanner before we design the final experience.</h1>
     <p class="muted">Enter a public website. This page calls <code>/api/website-check</code> and displays the scoring output plus developer diagnostics.</p>
 
@@ -42,7 +47,15 @@
       <button id="submit" type="submit">Run Check →</button>
     </form>
 
-    <div id="status" class="status hidden" aria-live="polite"></div>
+    <div id="status" class="status hidden" aria-live="polite">
+      <div class="statusTop">
+        <span id="statusMessage" class="statusMessage">Connecting to website…</span>
+        <span id="statusPercent" class="statusPercent">0%</span>
+      </div>
+      <div class="statusTrack" aria-hidden="true">
+        <div id="statusFill" class="statusFill"></div>
+      </div>
+    </div>
 
     <section id="result" class="hidden">
       <div class="scoreRow">
@@ -78,6 +91,9 @@
 <script>
 const form=document.getElementById('scanForm');
 const statusEl=document.getElementById('status');
+const statusMessage=document.getElementById('statusMessage');
+const statusPercent=document.getElementById('statusPercent');
+const statusFill=document.getElementById('statusFill');
 const resultEl=document.getElementById('result');
 const submit=document.getElementById('submit');
 
@@ -85,11 +101,63 @@ function esc(value=''){
   return String(value).replace(/[&<>"']/g,(c)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
+let progressTimer=null;
+let progressValue=0;
+
+function progressStage(value){
+  if(value < 16) return 'Connecting to website…';
+  if(value < 34) return 'Checking website structure…';
+  if(value < 50) return 'Reviewing conversion and trust signals…';
+  if(value < 67) return 'Reviewing SEO and technical health…';
+  if(value < 88) return 'Testing mobile performance…';
+  return 'Preparing your result…';
+}
+
+function paintProgress(value,message){
+  progressValue=Math.max(0,Math.min(100,Math.round(value)));
+  statusPercent.textContent=progressValue+'%';
+  statusFill.style.width=progressValue+'%';
+  statusMessage.textContent=message||progressStage(progressValue);
+}
+
+function startProgress(){
+  if(progressTimer)clearInterval(progressTimer);
+  paintProgress(1,'Connecting to website…');
+
+  progressTimer=setInterval(()=>{
+    let step;
+    if(progressValue < 20) step=2+Math.random()*2.2;
+    else if(progressValue < 55) step=1.1+Math.random()*1.8;
+    else if(progressValue < 80) step=.6+Math.random()*1.2;
+    else step=.2+Math.random()*.6;
+
+    paintProgress(Math.min(94,progressValue+step));
+  },420);
+}
+
+function finishProgress(){
+  if(progressTimer){
+    clearInterval(progressTimer);
+    progressTimer=null;
+  }
+  paintProgress(100,'Scan complete.');
+}
+
+function failProgress(message){
+  if(progressTimer){
+    clearInterval(progressTimer);
+    progressTimer=null;
+  }
+  statusMessage.textContent=message;
+  statusPercent.textContent='';
+  statusFill.style.width='100%';
+}
+
 form.addEventListener('submit',async(e)=>{
   e.preventDefault();
   resultEl.classList.add('hidden');
   statusEl.classList.remove('hidden');
-  statusEl.textContent='Connecting to website…';
+  startProgress();
   submit.disabled=true;
 
   try{
@@ -99,8 +167,6 @@ form.addEventListener('submit',async(e)=>{
       headers:{'content-type':'application/json'},
       body:JSON.stringify({url})
     });
-
-    statusEl.textContent='Checking website structure, SEO and mobile performance…';
 
     const data=await r.json();
     if(!r.ok||!data.success)throw new Error(data.error||'Scan failed');
@@ -182,10 +248,11 @@ form.addEventListener('submit',async(e)=>{
       (unverified?'<strong>Unverified URLs</strong><ul>'+unverified+'</ul>':'');
 
     document.getElementById('raw').textContent=JSON.stringify(data,null,2);
-    statusEl.textContent='Scan complete.';
+    finishProgress();
+    await new Promise(resolve=>setTimeout(resolve,280));
     resultEl.classList.remove('hidden');
   }catch(err){
-    statusEl.textContent=err.message;
+    failProgress(err.message);
   }finally{
     submit.disabled=false;
   }
