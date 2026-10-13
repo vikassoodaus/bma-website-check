@@ -622,6 +622,30 @@
       *{scroll-behavior:auto!important}
       .fill,.skippy{transition:none!important}
     }
+
+    /* =========================================================
+       GHL EMBED MODE
+       Use: https://bma-website-check.vercel.app/?embed=1
+    ========================================================= */
+    body.embed-mode{
+      background:transparent;
+    }
+    body.embed-mode .topbar,
+    body.embed-mode footer{
+      display:none !important;
+    }
+    body.embed-mode .hero{
+      padding-top:44px;
+    }
+    body.embed-mode .results{
+      padding-bottom:34px;
+    }
+    @media(max-width:620px){
+      body.embed-mode .hero{
+        padding-top:30px;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -767,6 +791,11 @@
   </footer>
 
 <script>
+const embedMode=new URLSearchParams(location.search).get('embed')==='1';
+if(embedMode){
+  document.body.classList.add('embed-mode');
+}
+
 const form=document.getElementById('scanForm');
 const reportForm=document.getElementById('reportForm');
 const resultEl=document.getElementById('result');
@@ -786,6 +815,30 @@ let progressTimer=null;
 let progressValue=0;
 let lastMascotHop=0;
 let latestScan=null;
+
+let resizeObserver=null;
+
+function postEmbedHeight(){
+  if(!embedMode || window.parent===window)return;
+  const height=Math.max(
+    document.documentElement.scrollHeight,
+    document.body.scrollHeight
+  );
+  window.parent.postMessage({
+    type:'bma-website-check-height',
+    height
+  }, '*');
+}
+
+if(embedMode && window.parent!==window){
+  if('ResizeObserver' in window){
+    resizeObserver=new ResizeObserver(()=>postEmbedHeight());
+    resizeObserver.observe(document.body);
+  }
+  window.addEventListener('load',postEmbedHeight);
+  setTimeout(postEmbedHeight,250);
+  setTimeout(postEmbedHeight,1200);
+}
 
 document.getElementById('year').textContent=new Date().getFullYear();
 
@@ -963,7 +1016,7 @@ function renderScan(data){
   }
 
   resultEl.classList.remove('hidden');
-  setTimeout(()=>resultEl.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'}),150);
+  setTimeout(()=>{ resultEl.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'}); postEmbedHeight(); },150);
 }
 
 form.addEventListener('submit',async(e)=>{
@@ -972,6 +1025,7 @@ form.addEventListener('submit',async(e)=>{
   latestScan=null;
   reportStatus.textContent='';
   statusEl.classList.remove('hidden');
+  postEmbedHeight();
   submit.disabled=true;
   startProgress();
 
@@ -1040,6 +1094,7 @@ reportForm.addEventListener('submit',async(e)=>{
     setTimeout(()=>URL.revokeObjectURL(objectUrl),30000);
 
     reportStatus.textContent='Your report is ready. Check your downloads.';
+    postEmbedHeight();
     reportButton.textContent='Download Again →';
   }catch(error){
     reportStatus.textContent=error?.message||'We could not generate your report.';
