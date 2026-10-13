@@ -33,21 +33,27 @@ export default async function handler(req, res) {
     if (!homeFetch.body) throw new Error('We could not read usable HTML from this website.');
 
     const home = analysePage(homeFetch.body, homeFetch.finalUrl.toString());
-    const extraUrls = discoverPages(home, 4);
 
-    const [auxBase, altHost, pageResults] = await Promise.all([
+    // Get sitemap intelligence before choosing the four sample pages. This is
+    // especially useful for Shopify and JS-heavy navigation where the homepage
+    // may expose fewer usable links to a simple HTML parser.
+    const [auxBase, altHost] = await Promise.all([
       inspectRobotsAndSitemap(homeFetch.finalUrl.toString()),
       checkAlternateHost(homeFetch.finalUrl.toString()),
-      Promise.all(extraUrls.map(async (url) => {
-        try {
-          const fetched = await safeFetch(url, { timeoutMs: 7000 });
-          if (!fetched.body) return null;
-          return analysePage(fetched.body, fetched.finalUrl.toString());
-        } catch {
-          return null;
-        }
-      })),
     ]);
+
+    const discovery = discoverPages(home, 4, auxBase.sitemapPageUrls || []);
+    const extraUrls = discovery.selected.map((item) => item.url);
+
+    const pageResults = await Promise.all(extraUrls.map(async (url) => {
+      try {
+        const fetched = await safeFetch(url, { timeoutMs: 7000 });
+        if (!fetched.body) return null;
+        return analysePage(fetched.body, fetched.finalUrl.toString());
+      } catch {
+        return null;
+      }
+    }));
 
     const pages = pageResults.filter(Boolean);
     const brokenLinks = await checkBrokenLinks(home, 30);
@@ -62,6 +68,7 @@ export default async function handler(req, res) {
       pages,
       site,
       pageSpeed,
+      discovery,
       aux: { ...auxBase, altHost, brokenLinks },
     };
 
@@ -100,6 +107,9 @@ export default async function handler(req, res) {
         pageSpeedError: pageSpeed.available ? null : pageSpeed.error || 'Unavailable',
         pageSpeedStatus: pageSpeed.status ?? null,
         pageSpeedApiKeyConfigured: Boolean(pageSpeed.apiKeyConfigured),
+        imageOptimisationAdvisory: pageSpeed.imageOptimised === false
+          ? 'PageSpeed identified image optimisation opportunities.'
+          : null,
         brokenLinksChecked: brokenLinks.checked,
         brokenLinksVerified: brokenLinks.verified,
         brokenLinksFound: brokenLinks.broken.length,
@@ -109,9 +119,21 @@ export default async function handler(req, res) {
         sitemapVerified: auxBase.sitemapVerified,
         sitemapUrl: auxBase.sitemapUrl,
         sitemapAttempts: auxBase.sitemapAttempts,
+        sitemapPageCandidates: (auxBase.sitemapPageUrls || []).length,
+        discovery: {
+          homepageInternalLinks: discovery.discoveredInternalLinks,
+          sitemapCandidates: discovery.sitemapCandidates,
+          candidateCount: discovery.candidateCount,
+          selected: discovery.selected.map((item) => ({
+            url: item.url,
+            source: item.source,
+            reason: item.reason,
+            score: item.score,
+          })),
+        },
       },
       meta: {
-        version: '1.2.0',
+        version: '1.4.0',
         durationMs: Date.now() - startedAt,
       },
       debug: process.env.EXPOSE_SCAN_DEBUG === 'true' ? {

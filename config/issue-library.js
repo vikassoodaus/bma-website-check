@@ -32,7 +32,7 @@ export const ISSUE_LIBRARY = {
     passText: 'Blocking time is within a healthy range.'
   },
   MOBILE_VIEWPORT: {
-    category: 'performance', family: 'mobile', points: 2, impact: 'critical', confidence: 'high',
+    category: 'performance', family: 'mobile', points: 3, impact: 'critical', confidence: 'high',
     failTitle: 'Mobile setup needs attention',
     failText: 'We could not verify a standard responsive viewport configuration.',
     recommendation: 'Add a responsive viewport meta tag and confirm the site reflows correctly on small screens.',
@@ -40,7 +40,7 @@ export const ISSUE_LIBRARY = {
     passText: 'The page includes a standard mobile viewport configuration.'
   },
   IMAGE_BLOAT: {
-    category: 'performance', family: 'performance', points: 1, impact: 'low', confidence: 'medium',
+    category: 'performance', family: 'performance', points: 0, impact: 'low', confidence: 'medium',
     failTitle: 'Images could be lighter',
     failText: 'The performance test found opportunities to reduce image payload.',
     recommendation: 'Compress oversized images, use modern formats where appropriate and serve responsive image sizes.',
