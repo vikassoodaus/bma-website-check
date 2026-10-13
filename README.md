@@ -1,4 +1,4 @@
-# BMA Free Website Check — Phase 1 — V1.1
+# BMA Free Website Check — Phase 1 — V1.2 — V1.1
 
 This is the first working build of the scanner backend and deterministic 100-point scoring engine.
 
@@ -53,7 +53,7 @@ This is the first working build of the scanner backend and deterministic 100-poi
 6. Deploy.
 7. Open the Vercel URL and run the tester against several sites.
 
-## Important: what is NOT in Phase 1 yet
+## Important: what is NOT in Phase 1 — V1.2 yet
 
 - OpenAI report writing
 - GHL lead creation
@@ -100,3 +100,14 @@ We should fix detection accuracy before building the polished public frontend.
 - Categories with too little verified data are shown as `Not fully verified` instead of being scaled to a misleading perfect score.
 - A 0–100 overall result is only published when at least 90% of the scoring model has been verified.
 - Development diagnostics now expose PageSpeed status, sitemap status, broken links, and unverified links.
+
+
+## V1.2 changes
+
+- Ignores Cloudflare `/cdn-cgi/` helper links in broken-link checks. These are not visitor-facing pages and can return 404 when probed directly.
+- Improves PageSpeed 429 diagnostics.
+- Reports whether `GOOGLE_PAGESPEED_API_KEY` is configured.
+
+### Recommended Vercel environment variable
+
+Add `GOOGLE_PAGESPEED_API_KEY` after enabling the PageSpeed Insights API in Google Cloud. Redeploy after saving the variable.

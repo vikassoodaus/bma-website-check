@@ -33,7 +33,7 @@
 </head>
 <body>
   <main class="wrap">
-    <div class="eyebrow">BMA Website Check — development tester v1.1</div>
+    <div class="eyebrow">BMA Website Check — development tester v1.2</div>
     <h1 class="title">Test the scanner before we design the final experience.</h1>
     <p class="muted">Enter a public website. This page calls <code>/api/website-check</code> and displays the scoring output plus developer diagnostics.</p>
 
@@ -175,6 +175,7 @@ form.addEventListener('submit',async(e)=>{
 
     document.getElementById('diagnostics').innerHTML=
       '<strong>PageSpeed:</strong> '+(t.pageSpeedAvailable?'available':'unavailable — '+esc(t.pageSpeedError||''))+'<br>'+
+      '<strong>PageSpeed API key:</strong> '+(t.pageSpeedApiKeyConfigured?'configured':'not configured')+'<br>'+
       '<strong>Sitemap:</strong> '+sitemap+'<br>'+
       '<strong>Internal links:</strong> '+esc(t.brokenLinksVerified||0)+' verified, '+esc(t.brokenLinksFound||0)+' broken, '+esc((t.brokenLinksUnverified||[]).length)+' unverified'+
       (broken?'<br><strong>Broken URLs</strong><ul>'+broken+'</ul>':'')+

@@ -98,6 +98,8 @@ export default async function handler(req, res) {
       technical: {
         pageSpeedAvailable: pageSpeed.available,
         pageSpeedError: pageSpeed.available ? null : pageSpeed.error || 'Unavailable',
+        pageSpeedStatus: pageSpeed.status ?? null,
+        pageSpeedApiKeyConfigured: Boolean(pageSpeed.apiKeyConfigured),
         brokenLinksChecked: brokenLinks.checked,
         brokenLinksVerified: brokenLinks.verified,
         brokenLinksFound: brokenLinks.broken.length,
@@ -109,7 +111,7 @@ export default async function handler(req, res) {
         sitemapAttempts: auxBase.sitemapAttempts,
       },
       meta: {
-        version: '1.1.0',
+        version: '1.2.0',
         durationMs: Date.now() - startedAt,
       },
       debug: process.env.EXPOSE_SCAN_DEBUG === 'true' ? {
