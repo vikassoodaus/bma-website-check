@@ -146,7 +146,7 @@ export default async function handler(req, res) {
         },
       },
       meta: {
-        version: '1.5.0',
+        version: '1.6.0',
         durationMs: Date.now() - startedAt,
       },
       debug: process.env.EXPOSE_SCAN_DEBUG === 'true' ? {
