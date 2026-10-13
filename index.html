@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>BMA Website Check — Development Tester</title>
   <style>
-    :root{--ink:#0b302c;--dark:#073d36;--text:#48635d;--line:#dfe8e4;--off:#fbfcfa;--blue:#eaf3ff;--lilac:#f0ebff;--peach:#fff0e7;--mint:#e9f6ef;--sage:#edf5ec;--blush:#ffedef}
+    :root{--ink:#0b302c;--dark:#073d36;--text:#48635d;--line:#dfe8e4;--off:#fbfcfa;--blue:#eaf3ff;--lilac:#f0ebff;--peach:#fff0e7;--mint:#e9f6ef;--sage:#edf5ec;--blush:#ffedef;--blue-strong:#cfe0f5;--lilac-strong:#ddd0f6;--peach-strong:#f3d9ca;--mint-strong:#cfe5d9;--sage-strong:#d4e3d2;--blush-strong:#edd5df}
     *{box-sizing:border-box}
     body{margin:0;background:var(--off);color:var(--ink);font-family:Inter,system-ui,Arial,sans-serif}
     .wrap{width:min(980px,calc(100% - 28px));margin:50px auto}
@@ -21,7 +21,7 @@
     .statusMessage{min-width:0}
     .statusPercent{flex:0 0 auto;min-width:52px;text-align:right;font-size:18px;font-weight:800;letter-spacing:-.02em;color:var(--dark)}
     .statusTrack{height:7px;margin-top:10px;overflow:hidden;border-radius:999px;background:#edf2ef}
-    .statusFill{width:0;height:100%;border-radius:999px;background:linear-gradient(90deg,#073d36,#648079);transition:width .38s ease}
+    .statusFill{width:0;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--blue-strong) 0%,var(--blue-strong) 16.2%,rgba(255,255,255,.72) 16.2%,rgba(255,255,255,.72) 16.66%,var(--lilac-strong) 16.66%,var(--lilac-strong) 32.9%,rgba(255,255,255,.72) 32.9%,rgba(255,255,255,.72) 33.33%,var(--peach-strong) 33.33%,var(--peach-strong) 49.6%,rgba(255,255,255,.72) 49.6%,rgba(255,255,255,.72) 50%,var(--mint-strong) 50%,var(--mint-strong) 66.2%,rgba(255,255,255,.72) 66.2%,rgba(255,255,255,.72) 66.66%,var(--sage-strong) 66.66%,var(--sage-strong) 82.9%,rgba(255,255,255,.72) 82.9%,rgba(255,255,255,.72) 83.33%,var(--blush-strong) 83.33%,var(--blush-strong) 100%);transition:width .38s ease}
     .hidden{display:none}
     .scoreRow{display:grid;grid-template-columns:170px 1fr;gap:16px;align-items:center}
     .score{font-size:64px;font-weight:800;letter-spacing:-.05em}
@@ -38,7 +38,7 @@
 </head>
 <body>
   <main class="wrap">
-    <div class="eyebrow">BMA Website Check — development tester v1.3</div>
+    <div class="eyebrow">BMA Website Check — development tester v1.3.1</div>
     <h1 class="title">Test the scanner before we design the final experience.</h1>
     <p class="muted">Enter a public website. This page calls <code>/api/website-check</code> and displays the scoring output plus developer diagnostics.</p>
 
