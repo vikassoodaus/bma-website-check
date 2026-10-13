@@ -1,17 +1,67 @@
-# BMA Free Website Check — V1.6
+# BMA Free Website Check — V2.0
 
-Final engine stabilisation pass before the public UI.
+V2.0 turns the development tester into the public-facing BMA Free Website Check.
 
-## V1.6 changes
+## What is included
 
-- Balanced sitemap-index sampling so Shopify product URLs cannot be crowded out by a large pages sitemap.
-- Product and collection sitemap children are prioritised for eCommerce discovery.
-- Up to 180 sitemap page candidates can be considered while still sampling only 5 pages in the free scan.
-- PageSpeed timeout increased to 45 seconds with a clear timeout diagnostic.
-- eCommerce homepage action scoring now recognises detected product/cart actions consistently.
-- eCommerce warning copy no longer contradicts a detected purchase action.
-- Existing Skippy progress animation and V1.5 eCommerce scoring are preserved.
+- Public BMA-branded interface
+- Website URL scan
+- Animated six-colour progress bar
+- Skippy moving with scan progress
+- 0–100 result
+- Six category cards
+- Top 3 opportunities
+- Positive findings
+- Hidden developer diagnostics (`?debug=1`)
+- Lead capture after the visitor has already seen value
+- Automatic 6-page PDF report generation
+- Optional GoHighLevel handoff through an inbound webhook
 
-## Expected Shopify sample
+## Deploy
 
-Homepage + Collection + Product + Contact + About, where those page types are available.
+Replace the existing GitHub repository contents with the contents of this folder and commit to `main`.
+
+Keep the existing Vercel environment variable:
+
+`GOOGLE_PAGESPEED_API_KEY`
+
+Optional:
+
+`GHL_WEBHOOK_URL`
+
+If `GHL_WEBHOOK_URL` is not configured, the PDF still works. The lead simply is not sent into GHL yet.
+
+## GoHighLevel connection
+
+Create a GHL workflow with an **Inbound Webhook** trigger, copy the webhook URL, then add it to Vercel as:
+
+`GHL_WEBHOOK_URL`
+
+V2.0 sends these fields:
+
+- First name
+- Email
+- Business name
+- Website URL
+- Overall result
+- Six category results
+- Top 3 opportunities
+- Submission date
+
+The workflow can then create/update the contact, apply a `free-website-check` tag, notify BMA, and send a follow-up email.
+
+## Debug mode
+
+Normal visitors do not see developer diagnostics.
+
+To show them temporarily:
+
+`https://your-domain/?debug=1`
+
+## Before public launch
+
+The page currently contains:
+
+`<meta name="robots" content="noindex,nofollow">`
+
+Keep that while testing. Remove it when the Website Check is ready to be indexed publicly.
