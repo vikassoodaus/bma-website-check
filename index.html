@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>BMA Website Check — Development Tester V1.4.1</title>
+  <title>BMA Website Check — Development Tester V1.5</title>
   <style>
     :root{--ink:#0b302c;--dark:#073d36;--text:#48635d;--line:#dfe8e4;--off:#fbfcfa;--blue:#eaf3ff;--lilac:#f0ebff;--peach:#fff0e7;--mint:#e9f6ef;--sage:#edf5ec;--blush:#ffedef;--blue-strong:#cfe0f5;--lilac-strong:#ddd0f6;--peach-strong:#f3d9ca;--mint-strong:#cfe5d9;--sage-strong:#d4e3d2;--blush-strong:#edd5df}
     *{box-sizing:border-box}
@@ -42,7 +42,7 @@
 </head>
 <body>
   <main class="wrap">
-    <div class="eyebrow">BMA Website Check — development tester v1.4.1</div>
+    <div class="eyebrow">BMA Website Check — development tester v1.5</div>
     <h1 class="title">Test the scanner before we design the final experience.</h1>
     <p class="muted">Enter a public website. This page calls <code>/api/website-check</code> and displays the scoring output plus developer diagnostics.</p>
 
@@ -225,7 +225,7 @@ form.addEventListener('submit',async(e)=>{
       data.score.label+(data.score.provisional?' — provisional':'');
 
     document.getElementById('domain').textContent=
-      data.website.domain+' • '+data.website.scannedPages.length+' pages sampled • '+(data.meta.durationMs/1000).toFixed(1)+'s';
+      data.website.domain+' • '+(data.website.siteType==='ecommerce'?'eCommerce':'Service/lead-gen')+' • '+data.website.scannedPages.length+' pages sampled • '+(data.meta.durationMs/1000).toFixed(1)+'s';
 
     document.getElementById('coverage').textContent=
       'Model verified: '+Math.round((data.score.coverage||0)*100)+'% • '+data.score.unverifiedChecks+' unverified check'+(data.score.unverifiedChecks===1?'':'s');
@@ -294,7 +294,7 @@ form.addEventListener('submit',async(e)=>{
       '<strong>PageSpeed:</strong> '+(t.pageSpeedAvailable?'available':'unavailable — '+esc(t.pageSpeedError||''))+'<br>'+
       '<strong>PageSpeed API key:</strong> '+(t.pageSpeedApiKeyConfigured?'configured':'not configured')+'<br>'+
       '<strong>Sitemap:</strong> '+sitemap+'<br>'+
-      '<strong>Discovery:</strong> '+esc(t.discovery?.homepageInternalLinks||0)+' homepage links, '+esc(t.discovery?.sitemapCandidates||0)+' sitemap URLs, '+esc(t.discovery?.candidateCount||0)+' usable candidates<br>'+
+      '<strong>Discovery:</strong> '+esc(t.discovery?.homepageInternalLinks||0)+' homepage links, '+esc(t.discovery?.sitemapCandidates||0)+' sitemap URLs, '+esc(t.discovery?.candidateCount||0)+' usable candidates'+(t.discovery?.ecommerceMode?' • eCommerce mode':'')+'<br>'+
       '<strong>Internal links:</strong> '+esc(t.brokenLinksVerified||0)+' verified, '+esc(t.brokenLinksFound||0)+' broken, '+esc((t.brokenLinksUnverified||[]).length)+' unverified'+
       (selectedPages?'<br><strong>Selected sample pages</strong><ul>'+selectedPages+'</ul>':'')+
       (t.imageOptimisationAdvisory?'<strong>Advisory:</strong> '+esc(t.imageOptimisationAdvisory)+'<br>':'')+

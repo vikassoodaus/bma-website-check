@@ -56,7 +56,18 @@ export default async function handler(req, res) {
     }));
 
     const pages = pageResults.filter(Boolean);
-    const brokenLinks = await checkBrokenLinks(home, 30);
+
+    // Broken-link testing should not depend only on homepage links. Some Shopify
+    // themes expose little usable navigation in the initial HTML, while sampled
+    // collection/product pages contain normal internal links.
+    const combinedLinkSource = {
+      ...home,
+      internalLinks: [
+        ...(home.internalLinks || []),
+        ...pages.flatMap((page) => page.internalLinks || []),
+      ],
+    };
+    const brokenLinks = await checkBrokenLinks(combinedLinkSource, 30);
     const site = aggregateSite(home, pages);
 
     const rawScan = {
@@ -80,6 +91,7 @@ export default async function handler(req, res) {
         requestedUrl: rawScan.requestedUrl,
         finalUrl: rawScan.finalUrl,
         domain: new URL(rawScan.finalUrl).hostname,
+        siteType: site.siteType,
         scannedPages: [home.url, ...pages.map((p) => p.url)],
       },
       score: {
@@ -124,6 +136,7 @@ export default async function handler(req, res) {
           homepageInternalLinks: discovery.discoveredInternalLinks,
           sitemapCandidates: discovery.sitemapCandidates,
           candidateCount: discovery.candidateCount,
+          ecommerceMode: Boolean(discovery.ecommerce),
           selected: discovery.selected.map((item) => ({
             url: item.url,
             source: item.source,
@@ -133,7 +146,7 @@ export default async function handler(req, res) {
         },
       },
       meta: {
-        version: '1.4.0',
+        version: '1.5.0',
         durationMs: Date.now() - startedAt,
       },
       debug: process.env.EXPOSE_SCAN_DEBUG === 'true' ? {

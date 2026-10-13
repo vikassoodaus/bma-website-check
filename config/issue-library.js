@@ -113,6 +113,82 @@ export const ISSUE_LIBRARY = {
     passText: 'A likely thank-you or confirmation path was detected.'
   },
 
+
+  ECOM_PRIMARY_ACTION: {
+    category: 'conversion', family: 'ecommerce_action', points: 4, impact: 'critical', confidence: 'medium',
+    failTitle: 'The shopping action is not obvious',
+    failText: 'We could not detect a strong shopping action such as Shop Now, Buy Now or Add to Cart.',
+    recommendation: 'Make the main shopping action visually obvious and use clear purchase-focused button language.',
+    passTitle: 'Clear shopping action detected',
+    passText: 'Visitors are given an obvious path to browse or buy.'
+  },
+  ECOM_ACTION_EARLY: {
+    category: 'conversion', family: 'ecommerce_action', points: 3, impact: 'high', confidence: 'medium',
+    failTitle: 'The shopping action appears late',
+    failText: 'Visitors may need to move too far through the homepage before reaching a clear shopping action.',
+    recommendation: 'Bring a Shop, Collection or Product action closer to the main offer near the start of the homepage.',
+    passTitle: 'Shopping action appears early',
+    passText: 'A purchase-focused action appears early in the homepage structure.'
+  },
+  ECOM_PRODUCT_PATH: {
+    category: 'conversion', family: 'ecommerce_structure', points: 3, impact: 'critical', confidence: 'high',
+    failTitle: 'Product pages are difficult to reach',
+    failText: 'We could not verify a clear path to individual product pages.',
+    recommendation: 'Make individual products easy to reach from collections, navigation and key homepage sections.',
+    passTitle: 'Product path detected',
+    passText: 'Visitors can reach individual product pages.'
+  },
+  ECOM_COLLECTION_PATH: {
+    category: 'conversion', family: 'ecommerce_structure', points: 2, impact: 'high', confidence: 'high',
+    failTitle: 'Product browsing could be clearer',
+    failText: 'We could not verify a clear collection, category or shop browsing path.',
+    recommendation: 'Create clear collection or category routes so shoppers can browse relevant products quickly.',
+    passTitle: 'Collection path detected',
+    passText: 'Visitors can browse products through a collection, category or shop path.'
+  },
+  ECOM_CART_SIGNAL: {
+    category: 'conversion', family: 'ecommerce_purchase', points: 3, impact: 'critical', confidence: 'high',
+    failTitle: 'Cart functionality was not clearly detected',
+    failText: 'We could not verify an Add to Cart or equivalent cart action in the sampled shopping pages.',
+    recommendation: 'Make the Add to Cart action clear on product pages and confirm the cart flow works reliably.',
+    passTitle: 'Cart action detected',
+    passText: 'A clear cart action was detected in the shopping journey.'
+  },
+  ECOM_PRODUCT_CTA: {
+    category: 'conversion', family: 'ecommerce_purchase', points: 3, impact: 'critical', confidence: 'high',
+    failTitle: 'Product purchase action is unclear',
+    failText: 'The sampled product experience did not expose a clear Buy, Add to Cart or option-selection action.',
+    recommendation: 'Use a prominent product purchase action and make variant or option selection straightforward.',
+    passTitle: 'Product purchase action detected',
+    passText: 'The sampled product experience includes a clear purchase action.'
+  },
+  ECOM_CHECKOUT_SIGNAL: {
+    category: 'conversion', family: 'ecommerce_checkout', points: 2, impact: 'high', confidence: 'medium',
+    failTitle: 'Checkout path was not clearly verified',
+    failText: 'We could not verify a cart or checkout path from the sampled site structure.',
+    recommendation: 'Confirm shoppers can move cleanly from product selection to cart and checkout without unnecessary friction.',
+    passTitle: 'Checkout path detected',
+    passText: 'A cart or checkout path is available in the shopping journey.'
+  },
+
+
+  TRACK_ECOM_CONVERSION: {
+    category: 'tracking', family: 'tracking', points: 2, impact: 'high', confidence: 'high',
+    failTitle: 'Trackable commerce action was not detected',
+    failText: 'We could not verify a clear product-to-cart conversion action in the sampled shopping flow.',
+    recommendation: 'Make sure product and cart actions are measurable so analytics can distinguish browsing from buying intent.',
+    passTitle: 'Trackable commerce path detected',
+    passText: 'A product-to-cart conversion path is present and can be measured.'
+  },
+  TRACK_ECOM_CHECKOUT: {
+    category: 'tracking', family: 'tracking', points: 2, impact: 'high', confidence: 'medium',
+    failTitle: 'Checkout measurement path is unclear',
+    failText: 'We could not verify a cart or checkout step that can support purchase-funnel measurement.',
+    recommendation: 'Confirm cart and checkout events are available to your analytics and advertising platforms.',
+    passTitle: 'Cart or checkout measurement path detected',
+    passText: 'A cart or checkout stage is present for purchase-funnel measurement.'
+  },
+
   ABOUT_PAGE: {
     category: 'trust', family: 'trust', points: 2, impact: 'normal', confidence: 'high',
     failTitle: 'Visitors have limited information about the business',

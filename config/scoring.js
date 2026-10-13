@@ -21,14 +21,21 @@ export const CTA_PHRASES = [
   'free assessment', 'get estimate', 'learn more', 'request information',
 ];
 
+export const ECOMMERCE_CTA_PHRASES = [
+  'shop now', 'shop', 'buy now', 'add to cart', 'add to basket', 'add to bag',
+  'quick add', 'choose options', 'select options', 'view product', 'view products',
+  'view collection', 'browse collection', 'browse products', 'checkout', 'check out',
+  'order now', 'purchase', 'buy',
+];
+
 export const PAGE_WEIGHTS = [
   { pattern: /(^|\/)(contact|contact-us|enquire|enquiry|request-quote|book|booking|appointment)(\/|$)/i, weight: 110 },
   { pattern: /(^|\/)(pages\/)?(contact|contact-us|enquire|enquiry|request-quote|book|booking|appointment)(\/|$)/i, weight: 108 },
   { pattern: /(^|\/)(services?|solutions?|what-we-do|programs?)(\/|$)/i, weight: 100 },
   { pattern: /(^|\/)(pages\/)?(about|about-us|our-story|team)(\/|$)/i, weight: 95 },
-  { pattern: /(^|\/)(collections?|categories?)(\/|$)/i, weight: 88 },
-  { pattern: /(^|\/)(product|products)(\/|$)/i, weight: 82 },
-  { pattern: /(^|\/)(shop|store)(\/|$)/i, weight: 80 },
+  { pattern: /(^|\/)(collections?|categories?)(\/|$)/i, weight: 94 },
+  { pattern: /(^|\/)(product|products)(\/|$)/i, weight: 92 },
+  { pattern: /(^|\/)(shop|store)(\/|$)/i, weight: 88 },
   { pattern: /service|solution|program|collection|category|product/i, weight: 65 },
   { pattern: /\/pages\//i, weight: 58 },
 ];
