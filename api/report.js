@@ -52,6 +52,10 @@ export default async function handler(req,res) {
       return res.status(400).json({ error:'The Website Check data is missing or invalid. Please run the check again.' });
     }
 
+    const issue1 = scan.topIssues?.[0]?.title || 'No high-priority issues detected';
+    const issue2 = scan.topIssues?.[1]?.title || 'No additional high-priority issue detected';
+    const issue3 = scan.topIssues?.[2]?.title || 'No further high-priority issue detected';
+
     const webhookPayload = {
       source: 'BMA Free Website Check',
       submittedAt: new Date().toISOString(),
@@ -75,9 +79,9 @@ export default async function handler(req,res) {
       websiteSEO: scan.categories.seo?.score ?? null,
       websiteTechnical: scan.categories.technical?.score ?? null,
       websiteTracking: scan.categories.tracking?.score ?? null,
-      websiteIssue1: scan.topIssues?.[0]?.title || '',
-      websiteIssue2: scan.topIssues?.[1]?.title || '',
-      websiteIssue3: scan.topIssues?.[2]?.title || '',
+      websiteIssue1: issue1,
+      websiteIssue2: issue2,
+      websiteIssue3: issue3,
 
       // Keep the structured object too for compatibility/debugging.
       websiteCheck: {
@@ -92,9 +96,9 @@ export default async function handler(req,res) {
         seo: scan.categories.seo?.score ?? null,
         technical: scan.categories.technical?.score ?? null,
         tracking: scan.categories.tracking?.score ?? null,
-        issue1: scan.topIssues?.[0]?.title || '',
-        issue2: scan.topIssues?.[1]?.title || '',
-        issue3: scan.topIssues?.[2]?.title || '',
+        issue1,
+        issue2,
+        issue3,
       }
     };
 
