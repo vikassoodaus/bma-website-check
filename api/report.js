@@ -59,7 +59,27 @@ export default async function handler(req,res) {
         firstName,
         email,
         businessName,
+        website: scan.website.finalUrl || scan.website.requestedUrl,
       },
+
+      // Flat fields are intentionally included because GoHighLevel's
+      // Inbound Webhook mapper exposes them more reliably than nested data.
+      website: scan.website.finalUrl || scan.website.requestedUrl,
+      websiteDomain: scan.website.domain,
+      websiteSiteType: scan.website.siteType,
+      websiteOverallResult: scan.score.overall,
+      websiteResultLabel: scan.score.label,
+      websitePerformance: scan.categories.performance?.score ?? null,
+      websiteConversion: scan.categories.conversion?.score ?? null,
+      websiteTrust: scan.categories.trust?.score ?? null,
+      websiteSEO: scan.categories.seo?.score ?? null,
+      websiteTechnical: scan.categories.technical?.score ?? null,
+      websiteTracking: scan.categories.tracking?.score ?? null,
+      websiteIssue1: scan.topIssues?.[0]?.title || '',
+      websiteIssue2: scan.topIssues?.[1]?.title || '',
+      websiteIssue3: scan.topIssues?.[2]?.title || '',
+
+      // Keep the structured object too for compatibility/debugging.
       websiteCheck: {
         url: scan.website.finalUrl || scan.website.requestedUrl,
         domain: scan.website.domain,
@@ -78,15 +98,14 @@ export default async function handler(req,res) {
       }
     };
 
-    // Never block the visitor's report if the optional GHL webhook is unavailable.
-    const webhookPromise = sendWebhook(webhookPayload);
+    // Send the lead to GHL first. PDF generation is deliberately separate so
+    // a PDF problem can never prevent the lead from reaching the workflow.
+    const webhook = await sendWebhook(webhookPayload);
 
     const pdfBytes = await createWebsiteCheckPdf({
       lead: { firstName, businessName, email },
       scan,
     });
-
-    const webhook = await webhookPromise;
     res.setHeader('X-BMA-Lead-Webhook', webhook.sent ? 'sent' : 'not-sent');
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename="BMA-Website-Check-${scan.website.domain.replace(/[^a-z0-9.-]/gi,'-')}.pdf"`);
